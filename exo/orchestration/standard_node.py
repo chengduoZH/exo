@@ -123,6 +123,7 @@ class StandardNode(Node):
 
             if result.size == 1:  # we got a new token out
                 self.buffered_token_output[request_id][0].append(result.item())
+                # 获得新的token，并调用回调函数
                 self.trigger_on_token_callbacks(request_id, self.buffered_token_output[request_id][0], is_finished)
             if DEBUG >= 2: print(f"[{request_id}] result size: {result.size}, is finished: {is_finished}, buffered tokens: {len(self.buffered_token_output[request_id][0])}")
 
@@ -140,6 +141,7 @@ class StandardNode(Node):
         if not self.partitioning_strategy:
             if DEBUG >= 1: print("No partitioning strategy found. Skipping forward.")
             return
+        print(f"start predict next:{tensor_or_prompt}")
         shard = self.get_current_shard(base_shard)
 
         partitions = self.partitioning_strategy.partition(self.topology)

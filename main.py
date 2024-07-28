@@ -45,7 +45,12 @@ node = StandardNode(args.node_id, None, inference_engine, discovery, partitionin
 server = GRPCServer(node, args.node_host, args.node_port)
 node.server = server
 api = ChatGPTAPI(node, inference_engine.__class__.__name__, response_timeout_secs=args.chatgpt_api_response_timeout_secs)
-node.on_token.register("main_log").on_next(lambda _, tokens , __: print(inference_engine.tokenizer.decode(tokens) if hasattr(inference_engine, "tokenizer") else tokens))
+# 将step的结果输出到屏幕
+node.on_token.register("main_log").on_next(lambda _, tokens,
+                                                  __:
+                                           print(["predict word and toke:", inference_engine.tokenizer.decode(tokens),
+                                                  tokens] if hasattr(inference_engine,
+                                                                     "tokenizer") else tokens))
 if args.prometheus_client_port:
     from exo.stats.metrics import start_metrics_server
     start_metrics_server(node, args.prometheus_client_port)
